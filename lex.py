@@ -30,11 +30,10 @@ def t_STR(t):
     return t
 
 def t_LIST(t):
-    r'\[(\s*\w*\S*)+\]'
+    r'(\[((\d+|\"\S*\W*\S*\")(\,(\d+|\"\S*\W*\S*\"))*)*\])'
     t.value=t.value
     return t
 
-t_ignore = " \t"
 
 def t_error(t):
     print("Caracter no válido '%s'" % t.value[0])
@@ -97,7 +96,8 @@ def p_expresion_str(p):
 
 def p_expresion_list(p):
     'expression : LIST'
-    p[0]=str(p[1])
+    p[0]=p[1]
+
 
 def p_expression_name(p):
     'expression : NAME'
