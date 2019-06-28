@@ -1,4 +1,4 @@
-from tkinter import *
+﻿from tkinter import *
 import tkinter.messagebox
 from tkinter.ttk import Frame, Label, Entry
 
@@ -8,17 +8,6 @@ class App(Frame):
         Frame.__init__(self, parent)
         self.parent = parent
         self.initUI()
-    def cambiar(event):
-        problema1 = " Crear un arreglo de numpy basado en una lista"
-        problema2= "Comparar si el primer elemento de una lista es mayor que el segundo\n elemento(imprimir el elemento mayor)"
-        problema3 = "Genere un arreglo de 9 elementos con números pares mayores a 10"
-        problema4 = "  Dado el arreglo de numpy del ejercicio anterior utilice una función \nde numpy para hacer posible la multiplicación con su matriz identidad"
-        problema5 = " Dado el arreglo de numpy con las notas de algunos alumnos de matemáticas\n, determine el promedio de las notas"
-        listProblemas = [problema1,problema2,problema3,problema4,problema5]
-        contProblemas = 0
-
-
-
 
     def initUI(self):
         problema1 = " Crear un arreglo de numpy basado en una lista"
@@ -38,11 +27,23 @@ class App(Frame):
         global res
         res = StringVar()
         randomIterator = iter(listProblemas)
+
         def cambio(event):
 
             label.configure(text=next(randomIterator))
             label.update()
-            print("hola ")
+
+        def validate():
+            if expr.get() == '':
+                str = entry1.get("1.0","end-1c")
+                print(str)
+            else:
+                print(entry1.get("1.0",END))
+                #result = validate(expr.get())
+                #file = open('res', 'r')
+                #last_line = file.read().splitlines()[-1]
+                #res.set(last_line)
+
 
 
         frame0 = Frame(self)
@@ -67,7 +68,7 @@ class App(Frame):
         frame3 = Frame(self)
         frame3.pack(fill=X)
 
-        btnplus = Button(frame3, text="Run", width=8, command=self.validate)
+        btnplus = Button(frame3, text="Run", width=8, command=validate)
         btnplus.pack(side=LEFT, anchor=N, padx=5, pady=5)
 
         frame4 = Frame(self)
@@ -83,14 +84,6 @@ class App(Frame):
         if msg == 'error':
             tkinter.messagebox.showerror('Error!', 'Enter your expression')
 
-    def validate(self):
-        if expr.get() == '':
-            self.errorMsg('error')
-        else:
-            result = validate(expr.get())
-            file = open('res', 'r')
-            last_line = file.read().splitlines()[-1]
-            res.set(last_line)
 
 
 def main():
