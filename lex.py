@@ -1,13 +1,15 @@
 import re
+
 linea=0
 tokens = (
+    'NUMPY',
     'NAME','NUMBER',
     'PLUS','MINUS','TIMES','DIVIDE','EQUALS',
-    'LPAREN','RPAREN','POTENCY','DIVIDE_INT','STR','LIST',
+    'LPAREN','RPAREN','POTENCY','DIVIDE_INT','STR','LIST', 'ARRAY', 'RESHAPE', 'SUM' , 'MEAN','POINT'
     )
 
 # Tokens
-
+t_POINT = r'\.'
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'
@@ -18,6 +20,31 @@ t_RPAREN  = r'\)'
 t_NAME    = r'[a-zA-Z_][a-zA-Z0-9_]*'
 t_POTENCY = r'\*{2}'
 t_DIVIDE_INT = r'\/{2}'
+
+def t_NUMPY(t):
+    r'np'
+    t.value = t.value
+    return t
+
+def t_MEAN(t) :
+    r'mean'
+    t.value = t.value
+    return t
+
+def t_SUM(t) :
+    r'sum'
+    t.value = t.value
+    return t
+
+def t_RESHAPE(t) :
+    r'reshape'
+    t.value = t.value
+    return t
+
+def t_ARRAY (t):
+    r'array'
+    t.value = t.value
+    return t
 
 def t_NUMBER(t):
     r'\d+'
@@ -43,7 +70,22 @@ def t_error(t):
 import ply.lex as lex
 lex.lex()
 
+data= '''
+np.array(a)
+'''
+lex.input(data)
+
+ # Tokenize
+while True:
+    tok = lex.token()
+    if not tok:
+        break      # No more input
+    print(tok)
+
 precedence = (
+    ('right' , 'EQUALS'),
+    ('right' , 'NAME'),
+    ('right','NUMPY','POINT'),
     ('left','PLUS','MINUS'),
     ('left','TIMES','DIVIDE'),
     ('right','UMINUS'),
@@ -52,20 +94,26 @@ precedence = (
 names = { }
 
 
-def p_statement_assign(p):
-    'statement : NAME EQUALS expression'
-    names[p[1]] = p[3]
+
 
 def p_statement_expr(p):
-    'statement : expression'
+    '''statement : expression
+                 | expresasign'''
+
     aux=str(p[1])
     print(re.sub('"', "", re.sub("'","",aux)))
+
+def p_statement_assign(p):
+    '''expresasign : NAME EQUALS expression
+                   | NAME EQUALS exprenumpy'''
+    names[p[1]] = p[3]
+    print(names)
 
 def p_expression_binop(p):
     '''expression : expression PLUS expression
                   | expression MINUS expression
                   | expression TIMES expression
-                  | expression DIVIDE expression 
+                  | expression DIVIDE expression
                   | expression POTENCY expression
                   | expression DIVIDE_INT expression'''
     try:
@@ -75,8 +123,30 @@ def p_expression_binop(p):
         elif p[2] == '/': p[0] = p[1] / p[3]
         elif p[2]== '**':  p[0]= p[1] ** p[3]
         elif p[2]== '//':  p[0]= p[1] // p[3]
+
+        print(p[2] , p[1], p[0])
     except:
         print("La operacion no es válida")
+
+def p_expresion_numpy(p):
+    'exprenumpy : NUMPY POINT numpyfunc'
+    p[0] = p[1]+ str(p[2])+p[3]
+
+
+def p_numpyfuncion(p):
+    '''numpyfunc : ARRAY numpyarg
+                 | SUM numpyarg
+                 | RESHAPE numpyarg
+                 | MEAN numpyarg'''
+
+    p[0] = p[1]+p[2]
+
+
+def p_numpyarg(p):
+    '''numpyarg : LPAREN NAME RPAREN'''
+
+    p[0]= "(" + p[2] +")"
+    print(p[0])
 
 def p_expression_uminus(p):
     'expression : MINUS expression %prec UMINUS'
@@ -101,20 +171,22 @@ def p_expresion_list(p):
 
 def p_expression_name(p):
     'expression : NAME'
+
     try:
         p[0] = names[p[1]]
     except LookupError:
         print("La variable '%s' no esta definida " % p[1])
 
 def p_error(p):
-    print("Error de sintaxis '%s'" % p.value)
+    print("Error de sintaxis '%s'" % p)
 
 import ply.yacc as yacc
 yacc.yacc()
-while True:
-    try:
-        s = input("Linea %s:"%linea)
-        linea=linea+1
-    except EOFError:
-        break
-    yacc.parse(s)
+def validar (data):
+        try:
+
+
+
+            yacc.parse(data)
+        except EOFError:
+            print("error lexer")

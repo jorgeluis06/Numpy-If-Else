@@ -1,6 +1,7 @@
 ﻿from tkinter import *
 import tkinter.messagebox
 from tkinter.ttk import Frame, Label, Entry
+from lex import validar
 
 
 class App(Frame):
@@ -15,7 +16,12 @@ class App(Frame):
         problema3 = "Genere un arreglo de 9 elementos con números pares mayores a 10"
         problema4 = "  Dado el arreglo de numpy del ejercicio anterior utilice una función \nde numpy para hacer posible la multiplicación con su matriz identidad"
         problema5 = " Dado el arreglo de numpy con las notas de algunos alumnos de matemáticas\n, determine el promedio de las notas"
-        listProblemas = [problema2,problema3,problema4,problema5]
+        problema6 = "Dados dos arreglos de estudiantes y sus notas, concatene el arreglo e imprima las\nnotas y el nombre del alumno"
+        problema7 = "Dada la matriz de notas y estudiantes obtenga el promedio por estudiante y guarde \nlos promedios en un arreglo"
+        problema8 = "Dado el arreglo anterior determine el mejor promedio e indique si este promedio\nsupera la nota de 9.5"
+        problema9 = "Dado el arreglo de Strings con los nombre de las materias de un curso concatenarlo\ncon otro arreglo de notas para que forme una matriz de 2x10, guarde el resultado en una variable de nombre ClaseA."
+        problema10 ="Dado la matriz del ejercicio anterior y la matriz Clase B que representa las notas de\nel paralelo b. Compare los resultados de las 3 materias principales : Lenguaje,Matemáticas y Ciencias, si el promedio de la clase A supera al de la clase B, guarde\nTrue en un arreglo de numpy, de lo contrario guarde False, finalmente indique en cuántas de las 3 materias el paralelo A es mejor que el B"
+        listProblemas = [problema2,problema3,problema4,problema5,problema6,problema7,problema8, problema9,problema10]
         global contProblemas
         contProblemas = 1
         self.parent.title("Numpy If-else problems")
@@ -36,7 +42,15 @@ class App(Frame):
         def validate():
             if expr.get() == '':
                 str = entry1.get("1.0","end-1c")
-                print(str)
+                lista = str.split("\n")
+                print(lista)
+                for i in lista:
+                    validar(i)
+
+
+
+
+
             else:
                 print(entry1.get("1.0",END))
                 #result = validate(expr.get())
