@@ -1,11 +1,12 @@
 import re
 
+
 linea=0
 tokens = (
     'NUMPY',
     'NAME','NUMBER',
     'PLUS','MINUS','TIMES','DIVIDE','EQUALS',
-    'LPAREN','RPAREN','POTENCY','DIVIDE_INT','STR','LIST', 'ARRAY', 'RESHAPE', 'SUM' , 'MEAN','POINT'
+    'LPAREN','RPAREN','POTENCY','DIVIDE_INT','STR','LIST', 'ARRAY', 'RESHAPE', 'SUM' , 'MEAN','POINT','PRINT','VECTOR'
     )
 
 # Tokens
@@ -25,6 +26,11 @@ def t_NUMPY(t):
     r'np'
     t.value = t.value
     return t
+def t_PRINT(t):
+    r'print'
+    t.value = t.value
+    return t
+
 
 def t_MEAN(t) :
     r'mean'
@@ -50,6 +56,10 @@ def t_NUMBER(t):
     r'\d+'
     t.value = int(t.value)
     return t
+def t_VECTOR(p):
+    r'\[\d+\,\d+,\d+\]'
+    t.value = t.value
+    return t
 
 def t_STR(t):
     r'(\'(\s*\w*\S*)+\')|(\"(\s*\w*\S*)+\")'
@@ -71,7 +81,7 @@ import ply.lex as lex
 lex.lex()
 
 data= '''
-np.array(a)
+print(a)
 '''
 lex.input(data)
 
@@ -98,10 +108,16 @@ names = { }
 
 def p_statement_expr(p):
     '''statement : expression
-                 | expresasign'''
+                 | expresasign
+                 | prints'''
+
 
     aux=str(p[1])
     print(re.sub('"', "", re.sub("'","",aux)))
+
+def p_print(p):
+    '''prints : PRINT LPAREN NAME RPAREN'''
+    print(p[3], "aaa")
 
 def p_statement_assign(p):
     '''expresasign : NAME EQUALS expression
@@ -184,9 +200,6 @@ import ply.yacc as yacc
 yacc.yacc()
 def validar (data):
         try:
-
-
-
             yacc.parse(data)
         except EOFError:
             print("error lexer")
