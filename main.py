@@ -3,7 +3,8 @@ import tkinter.messagebox
 from tkinter.ttk import Frame, Label, Entry
 from lex import validar
 
-
+r = {}
+aux="import numpy as np\n"
 class App(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -43,10 +44,20 @@ class App(Frame):
             if expr.get() == '':
                 str = entry1.get("1.0","end-1c")
                 lista = str.split("\n")
+                l_exec=[aux]
                 print(lista)
                 for i in lista:
                     validar(i)
-
+                    l_exec.append(i+'\n')
+                
+                a=''.join(l_exec)
+                
+               
+                exec(a,globals(),r)
+                key,value=r.popitem()
+                result.configure(text=value)
+                result.update()
+                    
 
 
 
@@ -91,7 +102,7 @@ class App(Frame):
         lbl3 = Label(frame4, text="Result :", width=10)
         lbl3.pack(side=LEFT, padx=5, pady=5)
 
-        result = Entry(frame4,textvariable=res)
+        result = Label(frame4,text=r)
         result.pack(fill=X, padx=5, expand=True)
 
     def errorMsg(self,msg):

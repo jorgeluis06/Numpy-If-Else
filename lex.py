@@ -1,4 +1,5 @@
 import re
+import numpy as np
 
 
 linea=0
@@ -6,7 +7,8 @@ tokens = (
     'NUMPY',
     'NAME','NUMBER',
     'PLUS','MINUS','TIMES','DIVIDE','EQUALS',
-    'LPAREN','RPAREN','POTENCY','DIVIDE_INT','STR','LIST', 'ARRAY', 'RESHAPE', 'SUM' , 'MEAN','POINT','PRINT','VECTOR'
+    'LPAREN','RPAREN','POTENCY','DIVIDE_INT','STR','LIST', 'ARRAY', 'RESHAPE', 'SUM' , 'MEAN','POINT','PRINT','IF','MENORQUE',
+    'TAB','LINE','DOSPUNTOS','MAYORQUE','DIFERENTE','DIGUAL'
     )
 
 # Tokens
@@ -21,17 +23,34 @@ t_RPAREN  = r'\)'
 t_NAME    = r'[a-zA-Z_][a-zA-Z0-9_]*'
 t_POTENCY = r'\*{2}'
 t_DIVIDE_INT = r'\/{2}'
+t_MENORQUE = r'\<'
+t_MAYORQUE= r'\>'
+t_TAB= r'[ \t]{4}'
+t_LINE= r'[ \n]{1}'
+t_DOSPUNTOS = r'\:'
+
+
 
 def t_NUMPY(t):
     r'np'
     t.value = t.value
     return t
+
 def t_PRINT(t):
     r'print'
     t.value = t.value
     return t
 
+def t_IF(t):
+    r'if'
+    t.value = t.value
+    return t
 
+def t_ELSE(t):
+    r'else'
+    t.value = t.value
+    return t
+    
 def t_MEAN(t) :
     r'mean'
     t.value = t.value
@@ -56,10 +75,7 @@ def t_NUMBER(t):
     r'\d+'
     t.value = int(t.value)
     return t
-def t_VECTOR(p):
-    r'\[\d+\,\d+,\d+\]'
-    t.value = t.value
-    return t
+
 
 def t_STR(t):
     r'(\'(\s*\w*\S*)+\')|(\"(\s*\w*\S*)+\")'
@@ -70,7 +86,17 @@ def t_LIST(t):
     r'(\[((\d+|\"\S*\W*\S*\")(\,(\d+|\"\S*\W*\S*\"))*)*\])'
     t.value=t.value
     return t
+def t_DIFERENTE(t):
+    r'!='
+    t.value=t.value
+    return t
 
+def t_DIGUAL(t):
+    r'=='
+    t.value=t.value
+    return t
+    
+    
 
 def t_error(t):
     print("Caracter no válido '%s'" % t.value[0])
@@ -81,7 +107,8 @@ import ply.lex as lex
 lex.lex()
 
 data= '''
-print(a)
+if(a<5):
+    print(a)
 '''
 lex.input(data)
 
@@ -109,7 +136,8 @@ names = { }
 def p_statement_expr(p):
     '''statement : expression
                  | expresasign
-                 | prints'''
+                 | prints
+                 | con'''
 
 
     aux=str(p[1])
@@ -117,7 +145,7 @@ def p_statement_expr(p):
 
 def p_print(p):
     '''prints : PRINT LPAREN NAME RPAREN'''
-    print(p[3], "aaa")
+    print(p[3])
 
 def p_statement_assign(p):
     '''expresasign : NAME EQUALS expression
@@ -143,6 +171,24 @@ def p_expression_binop(p):
         print(p[2] , p[1], p[0])
     except:
         print("La operacion no es válida")
+
+
+
+
+def p_cond(p):
+    ''' con    : IF LPAREN NAME MENORQUE NAME RPAREN DOSPUNTOS LINE TAB
+    | IF LPAREN NAME DIFERENTE NAME RPAREN DOSPUNTOS LINE TAB
+    | IF LPAREN NAME DIGUAL NAME RPAREN DOSPUNTOS LINE TAB
+    | IF LPAREN NAME MAYORQUE NAME RPAREN DOSPUNTOS LINE TAB
+    | IF LPAREN NAME MAYORQUE NUMBER RPAREN DOSPUNTOS LINE TAB
+    | IF LPAREN NUMBER MAYORQUE NAME RPAREN DOSPUNTOS LINE TAB
+    | IF LPAREN NAME MENORQUE NUMBER RPAREN DOSPUNTOS LINE TAB
+    | IF LPAREN NUMBER MENORQUE NAME RPAREN DOSPUNTOS LINE TAB
+    | IF LPAREN NUMBER DIFERENTE NAME RPAREN DOSPUNTOS LINE TAB
+    | IF LPAREN NAME DIFERENTE NUMBER RPAREN DOSPUNTOS LINE TAB
+    | IF LPAREN NAME DIGUAL NUMBER RPAREN DOSPUNTOS LINE TAB
+    '''
+
 
 def p_expresion_numpy(p):
     'exprenumpy : NUMPY POINT numpyfunc'
